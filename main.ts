@@ -5,16 +5,35 @@ let LSpeed = 0
 let delta = 0
 let time = 0
 let maxSpeed = 255
-let acceleration = 200
-let turn = 0.2
+let acceleration = 500
+let turn = 0
 let line = false
-let lineCol = 100
+let lineCol = 200
 let dist = false
 let distObj = 10
+radio.setGroup(19)
+let stop = true
+radio.onReceivedNumber(function on_received_number(receivedNumber: number) {
+    let stop: boolean;
+    if (receivedNumber == 3) {
+        stop = true
+    }
+    
+    if (receivedNumber == 2) {
+        stop = false
+    }
+    
+    
+})
 basic.forever(function on_forever() {
+    
+    if (stop) {
+        return
+    }
     
     dist = distObj >= maqueenPlusV2.readUltrasonic(DigitalPin.P13, DigitalPin.P14)
     line = lineCol >= maqueenPlusV2.readLineSensorData(maqueenPlusV2.MyEnumLineSensor.SensorL2)
+    console.log(curLSpeed)
     if (line) {
         setSpeed(turn, 1)
     } else {
@@ -22,7 +41,7 @@ basic.forever(function on_forever() {
     }
     
     // print(delta + " " + time)
-    if (dist) {
+    if (false) {
         brake()
     } else {
         curLSpeed = accelerate(delta, curLSpeed, LSpeed)
@@ -69,6 +88,7 @@ function setSpeed(l: number = 1, r: number = 1) {
 }
 
 function setMotor(l: number = 255, r: number = 255) {
+    console.log(l + " " + r)
     if (l > 0) {
         maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Forward, l)
     } else {
